@@ -600,7 +600,10 @@ class DatabaseOperations ( BaseDatabaseOperations ):
         else:
             if timezone.is_aware(value):
                 if settings.USE_TZ:
-                    value = value.astimezone( utc ).replace( tzinfo=None )
+                    if (djangoVersion[0:2] < ( 4, 1 )):
+                        value = value.astimezone( utc ).replace( tzinfo=None )
+                    else:
+                        value = value.astimezone( datetime.timezone.utc ).replace( tzinfo=None )
                 else:
                     raise ValueError( "Timezone aware datetime not supported" )
             return str( value )
